@@ -2,7 +2,7 @@
 
 **Screenr** — an EFL screen recorder for X11, with a live drag-to-select region.
 
-![Elicit screenshot]()
+![Screenr screenshot](https://github.com/user-attachments/assets/f4507d7a-1637-4531-a725-fdecd014ff47)
 
 ---
 
