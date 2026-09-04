@@ -1,0 +1,17 @@
+executable('screenr',
+  sources      : files(
+    'main.c',
+    'callbacks.c',
+    'recorder.c',
+    'capture_preview.c',
+    'overlay.c',
+    'overlay_body_drag.c',
+    'overlay_fill_sync.c',
+    'overlay_handle_hit_ext.c',
+    'overlay_done_button.c',
+  ),
+  dependencies : deps,
+  c_args       : ['-DSCREENR_DATADIR="' + (get_option('prefix') / get_option('datadir') / 'screenr') + '"'],
+  install      : true,
+  install_dir  : get_option('bindir'),
+)

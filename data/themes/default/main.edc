@@ -1,0 +1,798 @@
+group { 
+   name: "screenr/main";
+   min: 95 174;
+
+   set {
+      name: "rec_button-gradient";
+      image { image: "images/rec_button-gradient96x96.png" COMP; size: 84 84 99999 99999; }
+      image { image: "images/rec_button-gradient72x72.png" COMP; size: 60 60 83 83; }
+      image { image: "images/rec_button-gradient48x48.png" COMP; size: 0 0 59 59; }
+   }
+
+   set {
+      name: "rec_button-center";
+      image { image: "images/rec_button-center96x96.png" COMP; size: 84 84 99999 99999; }
+      image { image: "images/rec_button-center72x72.png" COMP; size: 60 60 83 83; }
+      image { image: "images/rec_button-center48x48.png" COMP; size: 0 0 59 59; }
+   }
+
+   set {
+      name: "rec_dot";
+      image { image: "images/rec_dot18x18.png" COMP; size: 16 16 99999 99999; }
+      image { image: "images/rec_dot14x14.png" COMP; size: 12 12 15 15; }
+      image { image: "images/rec_dot9x9.png" COMP; size: 0 0 11 11; }
+   }
+
+   set {
+      name: "rec_outline";
+      image { image: "images/rec_outline134x38.png" COMP; size: 118 34 300 90; }
+      image { image: "images/rec_outline101x29.png" COMP; size: 84 24 117 33; }
+      image { image: "images/rec_outline67x19.png" COMP; size: 0 0 83 23; }
+   }
+
+   set {
+      name: "circle-modes";
+      image { image: "images/circle-modes52x52.png" COMP; size: 46 46 150 150; }
+      image { image: "images/circle-modes39x39.png" COMP; size: 33 33 45 45; }
+      image { image: "images/circle-modes26x26.png" COMP; size: 0 0 32 32; }
+   }
+
+   parts {    
+
+// rect to hide elm background
+      part { 
+         name: "bg";
+         type: RECT;
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            color: 40 40 40 255;
+         }
+      }
+
+// spacer for (resolution) row
+      part { 
+         name: "spc_resolution";
+         type: SPACER; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "bg"; relative: 0.0 0.0; offset: 0 0; } 
+            rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.0;
+            min: 95 31;
+            max: 95 31;
+            fixed: 1 1;
+            //color: 253 253 253 255; // for debug
+            offscale; 
+         }
+      }
+
+// spacer for (screen, selection, window) row
+      part { 
+         name: "spc_modes";
+         type: SPACER; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to_y: "spc_resolution"; relative: 0.0 1.0; offset: 0 0; }
+            rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; } 
+            align: 0.5 0.0;
+            min: 52 26;
+            max: 52 26;
+            fixed: 1 1;
+            //color: 203 203 203 255; // for debug 
+            offscale; 
+         }
+      }
+
+// spacer for (dot timer) row
+      part { 
+         name: "spc_timer";
+         type: SPACER; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to_y: "spc_modes"; relative: 0.0 1.0; offset: 0 0; } 
+            rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.0;
+            min: 95 31;
+            max: 95 31;
+            fixed: 1 1;
+            //color: 193 193 193 255; // for debug
+            offscale; 
+         }
+      }
+
+// spacer for (rec button)
+      part { 
+         name: "spc_rec";
+         type: SPACER; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to_y: "spc_timer"; relative: 0.0 1.0; offset: 0 0; }
+            rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; } 
+            align: 0.5 0.0;
+            min: 95 48;
+            max: 95 48;
+            fixed: 1 1;
+            //color: 63 63 63 255; // for debug
+            offscale; 
+         }
+      }
+
+// spacer for (audio / mouse cursor toggles) row
+      part { 
+         name: "spc_toggles";
+         type: SPACER; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to_y: "spc_rec"; relative: 0.0 1.0; offset: 0 0; } 
+            rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; } 
+            align: 0.5 0.0;
+            min: 56 38;
+            max: 56 38;
+            fixed: 1 1;
+            //color: 233 233 233 255; // for debug
+            offscale; 
+         }
+      }
+
+// resolution pill
+      part { 
+         name: "res_outline";
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_resolution"; relative: 0.0 0.0; offset: 12 0; }
+            rel2 { to: "spc_resolution"; relative: 1.0 1.0; offset: -13 -1; }
+            //align: 0.0 0.5;
+            image.normal: "images/modes.png";
+            image.border: 16 16 16 16;
+            min: 84 19;
+            max: 84 19;
+            fixed: 1 1;
+            color: 24 24 24 255;
+            offscale; 
+         }
+      }
+
+// mode dimensions
+      part { 
+         name: "dimensions_text"; 
+         type: TEXT;
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "res_outline"; relative: 0.0 0.0; offset: 0 2; }
+            rel2 { to: "res_outline"; relative: 1.0 1.0; offset: -1 -1; }
+            //color: 192 192 192 255;
+            color: 52 199 89 255; // gookie grien
+            offscale;
+
+            text { 
+                   text: "X x Y"; 
+                   font: MONO; 
+                   size: 10;
+                   align: 0.5 0.5; 
+            }
+         }
+      }
+
+// mode widget (fullscreen, selection)
+      part { 
+         name: "mode-widget";
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_modes"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "spc_modes"; relative: 1.0 1.0; offset: -1 -1; }
+            //align: 0.0 0.5;
+            image.normal: "images/modes.png";
+            image.border: 16 16 16 16;
+            min: 52 26; // 84 26;
+            max: 52 26; // 84 26;
+            fixed: 1 1;
+            color: 24 24 24 255;
+            offscale; 
+         }
+      }
+
+// mode toggle 
+      part { 
+         name: "btn_toggle"; 
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0; // screen mode
+            rel1 { to: "mode-widget"; relative: 0.0 0.0; offset: 2 2; }
+            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -3 -3; }
+            align: 0.0 0.5;
+            image.normal: "images/modes.png";
+            image.border: 16 16 16 16;
+            min: 24 22;
+            max: 24 22;
+            fixed: 1 1;
+            //color: 52 199 89 255; // gookie grien
+            color: 100 140 200 255; // blue cored
+            offscale;
+         }
+
+         description { 
+            state: "selection_mode" 0.0; // selection mode
+            inherit: "default" 0.0;
+            align: 1.0 0.5;
+         }
+      }
+
+      part { 
+         name: "screen_icon"; 
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "mode-widget"; relative: 0.0 0.0; offset: 4 0; }
+            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.0 0.5;
+            image.normal: "images/monitor.png";
+            min: 20 20;
+            max: 20 20;
+            fixed: 1 1;
+            color: 255 255 255 255;
+            offscale;
+         }
+      }
+
+      part { 
+         name: "selection_icon"; 
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "mode-widget"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -5 -1; }
+            align: 1.0 0.5;
+            image.normal: "images/square-dashed.png";
+            min: 20 20;
+            max: 20 20;
+            fixed: 1 1;
+            color: 255 255 255 255;
+            offscale;
+         }
+      }
+
+/*
+      part { 
+         name: "window_icon"; 
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "mode-widget"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -6 -1; }
+            align: 1.0 0.5;
+            image.normal: "images/app-window.png";
+            min: 20 20;
+            max: 20 20;
+            fixed: 1 1;
+            color: 255 255 255 64; // opacity for now since it is not implemented
+            offscale;
+         }
+      }
+*/
+
+// the timer 
+      part { 
+         name: "timer_outline"; 
+         type: IMAGE; 
+         mouse_events: 0;
+         scale: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_timer"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "spc_timer"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
+            image.normal: "rec_outline";
+            min: 67 19;
+            max: 67 19;
+            fixed: 1 1;
+            color: 23 23 23 255; 
+            offscale; 
+         }
+
+         description { 
+            state: "recording" 0.0; // is this "state" in use?
+            inherit: "default" 0.0;
+            color: 23 23 23 192; // (recording)
+         }
+      }
+
+// REC indicator
+      part { 
+         name: "rec_dot"; 
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "timer_outline"; relative: 0.0 0.0; offset: 7 1; }
+            rel2 { to: "timer_outline"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.0 0.5;
+            image.normal: "rec_dot";
+            min: 9 9;
+            max: 9 9;
+            fixed: 1 1;
+            color: 82 82 82 255; // idle
+            offscale;
+         }
+
+         description { 
+            state: "recording" 0.0;
+            inherit: "default" 0.0;
+            color: 255 59 48 255; // fad red (recording)
+         }
+      }
+
+// elapsed timer
+      part { 
+         name: "timer_text"; 
+         type: TEXT;
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "timer_outline"; relative: 0.0 0.0; offset: 0 2; }
+            rel2 { to: "timer_outline"; relative: 1.0 1.0; offset: -8 -1; }
+            color: 82 82 82 255;
+            offscale;
+
+            text { 
+                   text: "00:00"; 
+                   font: MONO; 
+                   size: 12;
+                   align: 1.0 0.5; 
+            }
+         }
+
+         description {
+            state: "recording" 0.0;
+            inherit: "default" 0.0;
+            color: 192 192 192 255; // (recording)
+         }
+      }
+
+// record/stop button 
+      part { 
+         name: "btn_record-grad"; // gradient behind the button
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_rec"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "spc_rec"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
+            image.normal: "rec_button-gradient";
+            min: 48 48;
+            max: 48 48;
+            fixed: 1 1;
+            offscale;
+         }
+      }
+
+      part {
+         name: "ring_fill"; // (recording animation)
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel.to: "btn_record";
+            rel1.offset: 3 3;
+            rel2.offset: -4 -4;
+            image.normal: "images/ring_fill_01.png"; // idle
+            color: 216 52 44 0; 
+            offscale;
+         }
+
+         description { 
+            state: "visible" 0.0; // starting frame
+            inherit: "default" 0.0;
+            color: 216 52 44 255; 
+            image.normal: "images/ring_fill_01.png"; 
+         }
+
+         description { state: "filled" 0.0;
+            inherit: "default" 0.0;
+            color: 216 52 44 255; // (recording)
+
+            image {
+               normal: "images/ring_fill_60.png"; // final frame
+               tween: "images/ring_fill_01.png";
+               tween: "images/ring_fill_02.png";
+               tween: "images/ring_fill_03.png";
+               tween: "images/ring_fill_04.png";
+               tween: "images/ring_fill_05.png";
+               tween: "images/ring_fill_06.png";
+               tween: "images/ring_fill_07.png";
+               tween: "images/ring_fill_08.png";
+               tween: "images/ring_fill_09.png";
+               tween: "images/ring_fill_10.png";
+               tween: "images/ring_fill_11.png";
+               tween: "images/ring_fill_12.png";
+               tween: "images/ring_fill_13.png";
+               tween: "images/ring_fill_14.png";
+               tween: "images/ring_fill_15.png";
+               tween: "images/ring_fill_16.png";
+               tween: "images/ring_fill_17.png";
+               tween: "images/ring_fill_18.png";
+               tween: "images/ring_fill_19.png";
+               tween: "images/ring_fill_20.png";
+               tween: "images/ring_fill_21.png";
+               tween: "images/ring_fill_22.png";
+               tween: "images/ring_fill_23.png";
+               tween: "images/ring_fill_24.png";
+               tween: "images/ring_fill_25.png";
+               tween: "images/ring_fill_26.png";
+               tween: "images/ring_fill_27.png";
+               tween: "images/ring_fill_28.png";
+               tween: "images/ring_fill_29.png";
+               tween: "images/ring_fill_30.png";
+               tween: "images/ring_fill_31.png";
+               tween: "images/ring_fill_32.png";
+               tween: "images/ring_fill_33.png";
+               tween: "images/ring_fill_34.png";
+               tween: "images/ring_fill_35.png";
+               tween: "images/ring_fill_36.png";
+               tween: "images/ring_fill_37.png";
+               tween: "images/ring_fill_38.png";
+               tween: "images/ring_fill_39.png";
+               tween: "images/ring_fill_40.png";
+               tween: "images/ring_fill_41.png";
+               tween: "images/ring_fill_42.png";
+               tween: "images/ring_fill_43.png";
+               tween: "images/ring_fill_44.png";
+               tween: "images/ring_fill_45.png";
+               tween: "images/ring_fill_46.png";
+               tween: "images/ring_fill_47.png";
+               tween: "images/ring_fill_48.png";
+               tween: "images/ring_fill_49.png";
+               tween: "images/ring_fill_50.png";
+               tween: "images/ring_fill_51.png";
+               tween: "images/ring_fill_52.png";
+               tween: "images/ring_fill_53.png";
+               tween: "images/ring_fill_54.png";
+               tween: "images/ring_fill_55.png";
+               tween: "images/ring_fill_56.png";
+               tween: "images/ring_fill_57.png";
+               tween: "images/ring_fill_58.png";
+               tween: "images/ring_fill_59.png";
+            }
+         }
+      }
+
+      part { 
+         name: "btn_record"; // push button
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "btn_record-grad"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "btn_record-grad"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
+            image.normal: "rec_button-center";
+            offscale;
+         }
+
+         description { 
+            state: "pressed" 0.0; // pressed
+            inherit: "default" 0.0;
+            rel1 { to: "btn_record-grad"; relative: 0.0 0.0; offset: 1 1; }
+            rel2 { to: "btn_record-grad"; relative: 1.0 1.0; offset: -2 -2; }
+         }
+
+         description { 
+            state: "recording" 0.0; // is this "state" in use?
+            inherit: "default" 0.0;
+         }
+      }
+
+// toggles (audio/mouse cursor)
+      part { 
+         name: "audio-toggle";
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_toggles"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "spc_toggles"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.0 0.5;
+            image.normal: "circle-modes";
+            min: 26 26;
+            max: 26 26;
+            fixed: 1 1;
+            color: 24 24 24 255;
+            offscale; 
+         }
+      }
+
+      part { 
+         name: "audio_icon"; 
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "audio-toggle"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "audio-toggle"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
+            image.normal: "images/headphones.png";
+            min: 14 14;
+            max: 14 14;
+            fixed: 1 1;
+            color: 52 199 89 255; // gookie grien
+            offscale;
+         }
+
+         description { 
+            state: "off" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "images/headphone-off.png";
+            color: 255 59 48 255; // fad red
+         }
+      }
+
+      part { 
+         name: "mouse-toggle";
+         type: IMAGE; 
+         scale: 1;
+         mouse_events: 0;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "spc_toggles"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "spc_toggles"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 1.0 0.5;
+            image.normal: "circle-modes";
+            min: 26 26;
+            max: 26 26;
+            fixed: 1 1;
+            color: 24 24 24 255;
+            offscale; 
+         }
+      }
+
+      part { 
+         name: "mouse_icon"; 
+         type: IMAGE;
+         scale: 1;
+         mouse_events: 1;
+
+         description { 
+            state: "default" 0.0;
+            rel1 { to: "mouse-toggle"; relative: 0.0 0.0; offset: 0 0; }
+            rel2 { to: "mouse-toggle"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
+            image.normal: "images/mouse-pointer-2.png";
+            min: 14 14;
+            max: 14 14;
+            fixed: 1 1;
+            color: 52 199 89 255; // gookie grien
+            offscale;
+         }
+
+         description { 
+            state: "off" 0.0;
+            inherit: "default" 0.0;
+            image.normal: "images/mouse-pointer-2-off.png";
+            color: 255 59 48 255; // fad red
+         }
+      }
+   }
+
+   programs {
+      program { 
+         name: "rec_pressed";
+         signal: "mouse,down,1"; source: "btn_record";
+         action: STATE_SET "pressed" 0.0;
+         target: "btn_record";
+      }
+
+      program { 
+         name: "go_recording";
+         signal: "app,state,recording"; source: "app";
+         action: STATE_SET "recording" 0.0;
+         //target: "rec_outline";
+         target: "rec_dot";
+         //target: "timer_outline";
+         target: "timer_text";
+         target: "btn_record";
+      }
+
+      program { 
+         name: "rec_released";
+         signal: "mouse,up,1"; source: "btn_record";
+         action: STATE_SET "default" 0.0;
+         target: "btn_record";
+      }
+
+      program {
+         name: "go_idle";
+         signal: "app,state,idle"; source: "app";
+         action: STATE_SET "default" 0.0;
+         //target: "rec_outline";
+         target: "rec_dot";
+         //target: "timer_outline";
+         target: "timer_text";
+         target: "btn_record";
+      }
+
+      program { name: "ring_fill_show";
+         signal: "app,state,recording"; source: "app";
+         action: STATE_SET "visible" 0.0;
+         target: "ring_fill";
+         after: "ring_fill_start";
+      }
+
+      program { name: "ring_fill_start";
+         action: STATE_SET "filled" 0.0;
+         transition: LINEAR 60.0;
+         target: "ring_fill";
+         after: "ring_fill_reset";
+      }
+
+      program { name: "ring_fill_reset";
+         action: STATE_SET "visible" 0.0; 
+         target: "ring_fill";
+         after: "ring_fill_start";
+      }
+
+      program { name: "ring_fill_stop";
+         signal: "app,state,idle"; source: "app";
+         action: ACTION_STOP;
+         target: "ring_fill_start";
+      }
+
+      program { name: "ring_fill_hide";
+         signal: "app,state,idle"; source: "app";
+         action: STATE_SET "default" 0.0; 
+         target: "ring_fill";
+      }
+
+      program {
+         name: "screen_icon_click"; // enter screen rec mode
+         signal: "mouse,clicked,1"; source: "screen_icon";
+         filter: "btn_record" "default";
+         action: SIGNAL_EMIT "btn,screen,clicked" "app";
+      }
+
+      program {
+         name: "selection_icon_click"; // enter selection rec mode
+         signal: "mouse,clicked,1"; source: "selection_icon";
+         filter: "btn_record" "default";
+         action: SIGNAL_EMIT "btn,selection,clicked" "app";
+      }
+
+      program {
+         name: "audio_icon_click"; // toggle audio rec on/off
+         signal: "mouse,clicked,1"; source: "audio_icon";
+         filter: "btn_record" "default";
+         action: SIGNAL_EMIT "btn,audio,toggled" "app";
+      }
+
+      program {
+         name: "mouse_icon_click"; // toggle cursor rec on/ff
+         signal: "mouse,clicked,1"; source: "mouse_icon";
+         filter: "btn_record" "default";
+         action: SIGNAL_EMIT "btn,cursor,toggled" "app";
+      }
+
+      program { 
+         name: "default_mode"; // app set to default mode (screen rec)
+         signal: "mode,screen"; source: "app";
+         action: STATE_SET "default" 0.0;
+         target: "btn_toggle";
+      }
+
+      program { 
+         name: "selection_mode"; // app set to selection mode (selection rec)
+         signal: "mode,selection"; source: "app";
+         action: STATE_SET "selection_mode" 0.0;
+         target: "btn_toggle";
+      }
+
+      program {
+         signal: "mouse,down,1"; source: "screen_icon";
+         filter: "btn_record" "default";
+         action: STATE_SET "default" 0.0;
+         transition: SINUSOIDAL 0.5;
+         target: "btn_toggle";
+      }
+
+      program {
+         signal: "mouse,down,1"; source: "selection_icon";
+         filter: "btn_record" "default";
+         action: STATE_SET "selection_mode" 0.0;
+         transition: SINUSOIDAL 0.5;
+         target: "btn_toggle";
+      }
+
+      program {
+         name: "audio_on";
+         signal: "app,audio,on"; source: "app";
+         action: STATE_SET "default" 0.0;
+         //target: "audio-toggle_inset";
+         target: "audio_icon";
+      }
+
+      program {
+         name: "audio_off";
+         signal: "app,audio,off"; source: "app";
+         action: STATE_SET "off" 0.0;
+         //target: "audio-toggle_inset";
+         target: "audio_icon";
+      }
+
+      program {
+         name: "cursor_on";
+         signal: "app,cursor,on"; source: "app";
+         action: STATE_SET "default" 0.0;
+         //target: "mouse-toggle_inset";
+         target: "mouse_icon";
+      }
+
+      program {
+         name: "cursor_off";
+         signal: "app,cursor,off"; source: "app";
+         action: STATE_SET "off" 0.0;
+         //target: "mouse-toggle_inset";
+         target: "mouse_icon";
+      }
+
+      program { 
+         name: "record_btn_click";
+         signal: "mouse,clicked,1"; source: "btn_record";
+         action: SIGNAL_EMIT "btn,record,clicked" "app";
+      }
+   }
+}

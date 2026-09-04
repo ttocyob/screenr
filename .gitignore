@@ -1,0 +1,18 @@
+# Meson build directory (created by `meson setup build`) -- everything
+# under here is generated: build.ninja, compiled .o files, the linked
+# screenr binary, the compiled screenr.edj, meson-info/meson-logs/
+# meson-private, compile_commands.json. None of it belongs in version
+# control; a fresh `meson setup build && ninja -C build` regenerates
+# all of it from source.
+build/
+
+# Editor/IDE artifacts
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS artifacts
+.DS_Store
+Thumbs.db

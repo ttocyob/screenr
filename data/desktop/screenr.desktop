@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Screenr
+Comment=EFL FFmpeg Front-end
+Exec=screenr
+Icon=screenr
+Terminal=false
+Type=Application
+Categories=Graphics
+StartupNotify=true

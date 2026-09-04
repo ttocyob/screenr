@@ -1,0 +1,113 @@
+// screenr.edc — default basic theme 
+
+fonts {
+   font: "fonts/Hack-v3.003/Hack-Bold.ttf" "MONO";
+}
+
+#define MONO   "MONO"  
+#define FN     "Sans"
+#define FNBD   "Sans:style=Bold"
+
+images {
+   image: "images/rec_dot9x9.png" COMP; // 100%
+   image: "images/rec_dot14x14.png" COMP; // 150%
+   image: "images/rec_dot18x18.png" COMP; // 200%
+
+   image: "images/rec_outline67x19.png" COMP; // 100%
+   image: "images/rec_outline101x29.png" COMP; // 150%
+   image: "images/rec_outline134x38.png" COMP; // 200%
+
+   image: "images/monitor.png" COMP; // fullscreen icon
+   image: "images/square-dashed.png" COMP; // selection icon
+
+   image: "images/modes.png" COMP;
+
+   image: "images/headphones.png" COMP;
+   image: "images/headphone-off.png" COMP;
+   image: "images/mouse-pointer-2.png" COMP;
+   image: "images/mouse-pointer-2-off.png" COMP;
+
+   image: "images/circle-modes26x26.png" COMP; // 100%
+   image: "images/circle-modes39x39.png" COMP; // 150%
+   image: "images/circle-modes52x52.png" COMP; // 200%
+
+   image: "images/rec_button-gradient48x48.png" COMP;
+   image: "images/rec_button-gradient72x72.png" COMP;
+   image: "images/rec_button-gradient96x96.png" COMP;
+   image: "images/rec_button-center48x48.png" COMP;
+   image: "images/rec_button-center72x72.png" COMP;
+   image: "images/rec_button-center96x96.png" COMP;
+
+   image: "images/ring_fill_01.png" COMP;
+   image: "images/ring_fill_02.png" COMP;
+   image: "images/ring_fill_03.png" COMP;
+   image: "images/ring_fill_04.png" COMP;
+   image: "images/ring_fill_05.png" COMP;
+   image: "images/ring_fill_06.png" COMP;
+   image: "images/ring_fill_07.png" COMP;
+   image: "images/ring_fill_08.png" COMP;
+   image: "images/ring_fill_09.png" COMP;
+   image: "images/ring_fill_10.png" COMP;
+   image: "images/ring_fill_11.png" COMP;
+   image: "images/ring_fill_12.png" COMP;
+   image: "images/ring_fill_13.png" COMP;
+   image: "images/ring_fill_14.png" COMP;
+   image: "images/ring_fill_15.png" COMP;
+   image: "images/ring_fill_16.png" COMP;
+   image: "images/ring_fill_17.png" COMP;
+   image: "images/ring_fill_18.png" COMP;
+   image: "images/ring_fill_19.png" COMP;
+   image: "images/ring_fill_20.png" COMP;
+   image: "images/ring_fill_21.png" COMP;
+   image: "images/ring_fill_22.png" COMP;
+   image: "images/ring_fill_23.png" COMP;
+   image: "images/ring_fill_24.png" COMP;
+   image: "images/ring_fill_25.png" COMP;
+   image: "images/ring_fill_26.png" COMP;
+   image: "images/ring_fill_27.png" COMP;
+   image: "images/ring_fill_28.png" COMP;
+   image: "images/ring_fill_29.png" COMP;
+   image: "images/ring_fill_30.png" COMP;
+   image: "images/ring_fill_31.png" COMP;
+   image: "images/ring_fill_32.png" COMP;
+   image: "images/ring_fill_33.png" COMP;
+   image: "images/ring_fill_34.png" COMP;
+   image: "images/ring_fill_35.png" COMP;
+   image: "images/ring_fill_36.png" COMP;
+   image: "images/ring_fill_37.png" COMP;
+   image: "images/ring_fill_38.png" COMP;
+   image: "images/ring_fill_39.png" COMP;
+   image: "images/ring_fill_40.png" COMP;
+   image: "images/ring_fill_41.png" COMP;
+   image: "images/ring_fill_42.png" COMP;
+   image: "images/ring_fill_43.png" COMP;
+   image: "images/ring_fill_44.png" COMP;
+   image: "images/ring_fill_45.png" COMP;
+   image: "images/ring_fill_46.png" COMP;
+   image: "images/ring_fill_47.png" COMP;
+   image: "images/ring_fill_48.png" COMP;
+   image: "images/ring_fill_49.png" COMP;
+   image: "images/ring_fill_50.png" COMP;
+   image: "images/ring_fill_51.png" COMP;
+   image: "images/ring_fill_52.png" COMP;
+   image: "images/ring_fill_53.png" COMP;
+   image: "images/ring_fill_54.png" COMP;
+   image: "images/ring_fill_55.png" COMP;
+   image: "images/ring_fill_56.png" COMP;
+   image: "images/ring_fill_57.png" COMP;
+   image: "images/ring_fill_58.png" COMP;
+   image: "images/ring_fill_59.png" COMP;
+   image: "images/ring_fill_60.png" COMP;
+}
+
+//#include "colorclasses.edc"
+
+collections {
+   #include "main.edc" // app layout
+   #include "rubberband.edc" // selection window
+}
+
+/*    "I pledge allegiance to the Parts, and to the Offsets for which they
+ *    stand.  One Group, under Collections, with Signals, Programs, and
+ *    Relative Positioning for all."
+ */
