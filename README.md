@@ -1,8 +1,6 @@
 # Screenr
 
-**Screenr** — an EFL screen recorder for X11, with a live drag-to-select region.
-
-![Screenr screenshot](https://github.com/user-attachments/assets/f4507d7a-1637-4531-a725-fdecd014ff47)
+An EFL screen recorder for X11, with a live drag-to-select region.
 
 ---
 
@@ -16,15 +14,21 @@ Screenr is a small, focused screen recorder built on the Enlightenment Foundatio
 - Selection mode shows a real screenshot of your desktop to drag against, with resizable corner handles
 - Live dimensions readout while dragging, and in the window title
 - Audio (PulseAudio) and mouse cursor toggles, on by default for cursor, off by default for audio
+- HiDPI-aware: scales cleanly with Enlightenment's own UI scale setting, no blurry or mis-sized chrome at 150%/200%
 - `Tab` toggles between the two modes; `Esc` backs out of an open selection window
 - Output goes to `~/Videos/screenr/<timestamp>.webm`, never overwrites a previous recording
 
 ## Dependencies
 
-- [EFL](https://www.enlightenment.org) — Elementary, Evas, Edje, Ecore, Ecore-X, Ecore-Evas, Eina, Eet
+**Build:**
+- [EFL](https://www.enlightenment.org) — Elementary, Evas, Edje, Ecore, Ecore-X, Ecore-Evas, Eina, Eet 
 - [Meson](https://mesonbuild.com) build system
-- [ffmpeg](https://ffmpeg.org)
+
+**Runtime:**
+- [ffmpeg](https://ffmpeg.org), with `libvpx` support, on `PATH`
 - PulseAudio, if you want the audio toggle to do anything
+
+Screenr builds and runs without `ffmpeg` installed — it's not linked against, and nothing in the build checks for it. It's just what actually gets spawned when you press record, so without it on `PATH`, everything in the app works except recording itself.
 
 ## Building
 
@@ -40,7 +44,7 @@ sudo ninja -C build install
 screenr
 ```
 
-Screenr opens in Screen mode by default. Press the record button to start recording the full desktop.
+Screenr opens in Screen mode by default, at a fixed compact size. Press the record button to start recording the full desktop.
 
 ### Selection mode
 
