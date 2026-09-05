@@ -21,7 +21,7 @@ Screenr is a small, focused screen recorder built on the Enlightenment Foundatio
 
 ## Dependencies
 
-- [EFL](https://www.enlightenment.org) — Elementary, Evas, Edje, Ecore, Ecore-X, Ecore-Evas, Eina, Eet (>= 1.27.0)
+- [EFL](https://www.enlightenment.org) — Elementary, Evas, Edje, Ecore, Ecore-X, Ecore-Evas, Eina, Eet
 - [Meson](https://mesonbuild.com) build system
 - [ffmpeg](https://ffmpeg.org)
 - PulseAudio, if you want the audio toggle to do anything

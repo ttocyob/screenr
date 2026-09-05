@@ -642,9 +642,7 @@ group {
          name: "go_recording";
          signal: "app,state,recording"; source: "app";
          action: STATE_SET "recording" 0.0;
-         //target: "rec_outline";
          target: "rec_dot";
-         //target: "timer_outline";
          target: "timer_text";
          target: "btn_record";
       }
@@ -660,9 +658,7 @@ group {
          name: "go_idle";
          signal: "app,state,idle"; source: "app";
          action: STATE_SET "default" 0.0;
-         //target: "rec_outline";
          target: "rec_dot";
-         //target: "timer_outline";
          target: "timer_text";
          target: "btn_record";
       }
@@ -761,7 +757,6 @@ group {
          name: "audio_on";
          signal: "app,audio,on"; source: "app";
          action: STATE_SET "default" 0.0;
-         //target: "audio-toggle_inset";
          target: "audio_icon";
       }
 
@@ -769,7 +764,6 @@ group {
          name: "audio_off";
          signal: "app,audio,off"; source: "app";
          action: STATE_SET "off" 0.0;
-         //target: "audio-toggle_inset";
          target: "audio_icon";
       }
 
@@ -777,7 +771,6 @@ group {
          name: "cursor_on";
          signal: "app,cursor,on"; source: "app";
          action: STATE_SET "default" 0.0;
-         //target: "mouse-toggle_inset";
          target: "mouse_icon";
       }
 
@@ -785,7 +778,6 @@ group {
          name: "cursor_off";
          signal: "app,cursor,off"; source: "app";
          action: STATE_SET "off" 0.0;
-         //target: "mouse-toggle_inset";
          target: "mouse_icon";
       }
 
