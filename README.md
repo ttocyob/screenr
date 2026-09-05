@@ -1,6 +1,8 @@
 # Screenr
 
-An EFL screen recorder for X11, with a live drag-to-select region.
+**Screenr** — An EFL screen recorder for X11, with a live drag-to-select region.
+
+![Screenr screenshot](https://github.com/user-attachments/assets/0dbd8c38-3b9e-4c01-b639-f2b2501defbd)
 
 ---
 
