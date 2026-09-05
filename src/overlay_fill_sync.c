@@ -1,11 +1,16 @@
 /*
  * overlay_fill_sync.c
  *
- * REWRITTEN this session -- see rubberband.edc's own header comment
- * for the full architectural change this is part of. fill and the 4
+ * REWRITTEN this session -- see overlay.c's own header comment on
+ * ov->bg_obj for the full architectural change this is part of
+ * (rubberband.edc, which used to hold this story, has been removed
+ * entirely). fill and the 4
  * corner handles are no longer Edje parts at all: this file creates
- * them as genuinely independent plain Evas rectangles
- * (evas_object_rectangle_add()), owns their geometry entirely in C,
+ * fill as a genuinely independent plain Evas rectangle
+ * (evas_object_rectangle_add()) and the 4 handles as independent Evas
+ * images (evas_object_image_add(), loading handle.png -- a real
+ * dropshadowed circle asset, added later this session), owns their
+ * geometry entirely in C,
  * and Edje never has any knowledge of or authority over them. This is
  * the fix for a confirmed, reproducible bug: the previous architecture
  * positioned these via edje_object_part_object_get() + raw
@@ -82,15 +87,15 @@
  * -DSCREENR_DATADIR="{prefix}/{datadir}/screenr" from src/meson.build).
  * handle.png is installed to {datadir}/screenr/images/ by data/themes/
  * default/meson.build's own install_data() rule, alongside Done's own
- * rec_outline.png -- the only two images loaded this way, everything
+ * done_outline.png -- the only two images loaded this way, everything
  * else being already embedded in screenr.edj by edje_cc. */
 #define HANDLE_IMAGE_PATH SCREENR_DATADIR "/images/handle.png"
 
 /* Evas layer fill and the 4 handles render on -- see overlay.h's own
  * definition of EVAS_LAYER_FILL for why layers (not stack_above/below)
  * are used here, and for why this constant lives in the shared header
- * rather than privately in this file (overlay.c needs it too, to set
- * ov->edje_obj's own layer above this one). */
+ * rather than privately in this file (overlay_done_button.c needs it
+ * too, to set Done's own layer above this one). */
 
 /* File-static handles to the independent Evas objects this file owns,
  * plus the window-bounds source and scale factor -- all set once by
@@ -336,18 +341,19 @@ overlay_wire_fill_sync(Evas *evas, Evas_Object *bg_obj, double scale)
    g_bg_obj = bg_obj;
    g_scale = scale;
 
+   /* Fill: a plain, independent Evas rectangle */
    g_fill_obj = evas_object_rectangle_add(evas);
 
 #define PREMUL(c, a) (((c) * (a)) / 255)
 
    int r = 100, g = 140, b = 200;
-   int a = 32;
+   int a = 48;
 
    evas_object_color_set(g_fill_obj, PREMUL(r, a), PREMUL(g, a), PREMUL(b, a), a);
    evas_object_layer_set(g_fill_obj, EVAS_LAYER_FILL);
    evas_object_show(g_fill_obj);
 
-   /* The 4 corner handles: images/handle.png  */
+   /* The 4 corner handles: images/handle.png */
    g_handle_tl = evas_object_image_add(evas);
    g_handle_tr = evas_object_image_add(evas);
    g_handle_bl = evas_object_image_add(evas);
@@ -392,10 +398,9 @@ overlay_wire_fill_sync(Evas *evas, Evas_Object *bg_obj, double scale)
  * evas_object_stack_above() -- REMOVED, confirmed broken via real
  * testing: that call silently failed with an Evas ERR ("has no parent
  * but above has smart parent") whenever the reference object had a
- * smart parent (true for both ov->edje_obj and ov->shot_image, both
+ * smart parent (true for both ov->bg_obj and ov->shot_image, both
  * wrapped by Elementary's elm_win_resize_object_add()) while
- * fill/handles, being plain evas_object_rectangle_add() objects,
- * never do. Layer-based ordering (see EVAS_LAYER_FILL above, applied
+ * fill/handles, being plain independent Evas objects, never do. Layer-based ordering (see EVAS_LAYER_FILL above, applied
  * once at object-creation time in overlay_wire_fill_sync()) makes this
  * function's original job unnecessary: fill/handles are permanently on
  * a higher layer than the screenshot, so they always render above it

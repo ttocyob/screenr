@@ -189,13 +189,14 @@ elm_main(int argc, char **argv)
     * the real desktop size by this point (via its own internal
     * _query_desktop_size() call), so it's available immediately.
     * overlay_new() returning NULL is non-fatal for the app as a whole
-    * (matches the pattern used for a failed rubberband load elsewhere)
-    * -- Selection mode just won't be functional if this fails, worth
-    * a log so it's not silently broken. */
+    * (a calloc() failure, the only way it can fail now that it loads
+    * no Edje file at all -- see overlay.c's own header comment on
+    * ov->bg_obj) -- Selection mode just won't be functional if this
+    * fails, worth a log so it's not silently broken. */
    int desktop_w = 0, desktop_h = 0;
    if (capture_preview_get_desktop_size(app->cp, &desktop_w, &desktop_h))
      {
-        app->overlay = overlay_new(EDJ_FILE, desktop_w, desktop_h);
+        app->overlay = overlay_new(desktop_w, desktop_h);
         if (!app->overlay)
           fprintf(stderr, "[main] overlay_new() failed -- Selection mode will not be functional\n");
         else

@@ -23,8 +23,34 @@
  * ov->shot_image -- a static screenshot of the desktop, swallowed into
  *                    ov->win as a plain Evas image, filling the window
  *                    at whatever scale the window itself ended up at.
- * ov->edje_obj   -- the "screenr/rubberband" group, overlaid on top of
- *                    the screenshot at the window's own full size.
+ * ov->bg_obj     -- a plain, fully-transparent Evas rectangle,
+ *                    registered as a second resize object on ov->win
+ *                    (elm_win_resize_object_add() keeps it sized to the
+ *                    window's own current geometry automatically, same
+ *                    as any resize object). Exists PURELY as a stable
+ *                    geometry reference -- fill/handles/Done all read
+ *                    its current on-screen bounds (via evas_object_
+ *                    geometry_get()) to know the window's own real
+ *                    size, the same role "bg" used to play as an Edje
+ *                    part inside a loaded "screenr/rubberband" group.
+ *                    That group has been REMOVED ENTIRELY: once fill,
+ *                    the 4 corner handles, and Done all moved to
+ *                    independent Evas objects (see overlay_fill_sync.c/
+ *                    overlay_done_button.c's own header comments), "bg"
+ *                    was the ONLY reason left to load an Edje file for
+ *                    this window at all -- and elm_win_resize_object_
+ *                    add() already gives a plain Evas object the exact
+ *                    same "always matches the window's current size"
+ *                    guarantee Edje was providing, with none of Edje's
+ *                    own machinery (file loading, group resolution, a
+ *                    real layout-calculation pass needing to be forced
+ *                    via edje_object_calc_force()) required to get it.
+ *                    This also removes an entire class of bug this
+ *                    session spent real time chasing: a plain Evas
+ *                    object registered this way has no "Edje hasn't
+ *                    recalculated yet" staleness window at all, unlike
+ *                    reading a part's geometry back through
+ *                    edje_object_part_object_get().
  * ov->scale      -- the ONE-TIME scale factor between the window's own
  *                    on-screen pixels and real desktop pixels, computed
  *                    once in overlay_new() and never touched again for
@@ -99,7 +125,7 @@ struct _Overlay
 {
    Evas_Object *win;         /* ordinary Elm_Win -- see SELECTION_WIN_MAX_W above */
    Evas_Object *shot_image;  /* static screenshot, filling the window at ov->scale */
-   Evas_Object *edje_obj;    /* "screenr/rubberband" content, overlaid on top */
+   Evas_Object *bg_obj;      /* plain, transparent geometry-reference rect -- see header comment above */
    int desktop_w, desktop_h; /* REAL desktop resolution (unscaled) */
    int win_w, win_h;         /* window's own on-screen size (== desktop size if
                                  desktop_w <= SELECTION_WIN_MAX_W, else scaled down) */
@@ -353,7 +379,7 @@ _apply_window_size(Overlay *ov, double ui_scale)
 }
 
 Overlay *
-overlay_new(const char *theme_file, int desktop_w, int desktop_h)
+overlay_new(int desktop_w, int desktop_h)
 {
    Overlay *ov = calloc(1, sizeof(Overlay));
    if (!ov) return NULL;
@@ -393,47 +419,36 @@ overlay_new(const char *theme_file, int desktop_w, int desktop_h)
     * to the real UI scale factor before the window is ever shown. */
    _apply_window_size(ov, 1.0);
 
-   /* Rubberband content -- loaded once here, shown/hidden together
-    * with the window itself from here on. Fills the window at
-    * ov->win_w/win_h -- i.e. 1:1 with the WINDOW's own pixels, which
-    * may themselves be a scaled-down representation of the real
-    * desktop (see ov->scale). overlay_get_record_geometry() is what
-    * accounts for that scale when converting back to real desktop
-    * pixels -- this object itself doesn't need to know or care about
-    * the distinction. Now holds ONLY "bg" -- fill/handles/Done are all
-    * plain, independent Evas objects now, none of them Edje parts at
-    * all, see rubberband.edc's own header comment for the full
-    * architectural change and why. */
-   ov->edje_obj = edje_object_add(evas_object_evas_get(ov->win));
-   if (!edje_object_file_set(ov->edje_obj, theme_file, "screenr/rubberband"))
-     {
-        int err = edje_object_load_error_get(ov->edje_obj);
-        fprintf(stderr, "[overlay] failed to load screenr/rubberband from %s: %s\n",
-                theme_file, edje_load_error_str(err));
-     }
-   evas_object_size_hint_weight_set(ov->edje_obj, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-   elm_win_resize_object_add(ov->win, ov->edje_obj);
-   evas_object_show(ov->edje_obj);
+   /* bg: a plain, fully-transparent Evas rectangle, registered as a
+    * second resize object on ov->win -- elm_win_resize_object_add()
+    * keeps it sized to the window's own current geometry automatically,
+    * the exact same guarantee the old "screenr/rubberband" Edje group
+    * provided for its own "bg" part, with none of Edje's machinery
+    * (file loading, group resolution, a real layout-calculation pass
+    * needing edje_object_calc_force() to force it to actually run)
+    * required to get it. See this file's own header comment on
+    * ov->bg_obj for the full story of why that group was removed
+    * entirely -- once fill/handles/Done had all already moved to
+    * independent Evas objects, "bg" was the only reason left to load
+    * an Edje file for this window at all. No edje_object_calc_force()
+    * equivalent is needed here either: a plain Evas object registered
+    * via elm_win_resize_object_add() has no "hasn't recalculated yet"
+    * staleness window the way reading an Edje part's geometry back did
+    * -- confirmed via real testing across the several rounds of
+    * staleness bugs this session already chased down in that exact
+    * mechanism. */
+   ov->bg_obj = evas_object_rectangle_add(evas_object_evas_get(ov->win));
+   evas_object_color_set(ov->bg_obj, 0, 0, 0, 0);
+   evas_object_size_hint_weight_set(ov->bg_obj, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+   elm_win_resize_object_add(ov->win, ov->bg_obj);
+   evas_object_show(ov->bg_obj);
 
-   /* Forces Edje to finish computing "bg"'s real on-screen geometry
-    * RIGHT NOW, before overlay_wire_fill_sync()/overlay_done_button_
-    * new() below both read it -- same defensive habit already needed
-    * once before in this exact file (see overlay_show()'s own matching
-    * call and comment: reading a part's geometry before its window has
-    * ever been shown/laid out returns stale/zero values). The window
-    * hasn't been shown yet at this point either, so this guard is
-    * proactive here rather than reactive to an observed bug -- cheap
-    * enough to apply on the strength of already having hit this exact
-    * class of bug once. */
-   edje_object_calc_force(ov->edje_obj);
-
-   /* "bg" is the one remaining Edje part anything in this file reads
-    * from (read-only, for the window's own bounds -- see overlay_fill_
-    * sync.c's own header comment on why that's safe). Resolved once
-    * here and passed to both overlay_wire_fill_sync() and overlay_
-    * done_button_new() below, rather than either of them resolving it
-    * independently. */
-   Evas_Object *bg_obj = (Evas_Object *)edje_object_part_object_get(ov->edje_obj, "bg");
+   /* ov->bg_obj (created above) is passed directly to both overlay_
+    * wire_fill_sync() and overlay_done_button_new() below, rather than
+    * either of them needing to look it up themselves -- no resolution
+    * step needed at all now that it's a plain Evas object C already
+    * holds a direct pointer to, unlike the old edje_object_part_
+    * object_get() lookup this replaced. */
    Evas *evas = evas_object_evas_get(ov->win);
 
    /* Creates fill and the 4 corner handles as independent Evas
@@ -443,7 +458,7 @@ overlay_new(const char *theme_file, int desktop_w, int desktop_h)
     * render above the screenshot (layer 0). Sets fill's initial
     * default geometry itself (middle 50% of the window), so no
     * separate initialization call is needed here. */
-   overlay_wire_fill_sync(evas, bg_obj, ov->scale);
+   overlay_wire_fill_sync(evas, ov->bg_obj, ov->scale);
 
    Evas_Object *fill_obj = overlay_fill_sync_get_fill();
    overlay_wire_body_drag(fill_obj);
@@ -473,7 +488,7 @@ overlay_new(const char *theme_file, int desktop_w, int desktop_h)
    overlay_done_button_new(evas);
    {
       int init_bx, init_by, init_bw, init_bh;
-      evas_object_geometry_get(bg_obj, &init_bx, &init_by, &init_bw, &init_bh);
+      evas_object_geometry_get(ov->bg_obj, &init_bx, &init_by, &init_bw, &init_bh);
       (void)init_bx; (void)init_by;
       overlay_done_button_reposition(init_bw, init_bh);
    }
@@ -563,8 +578,8 @@ overlay_show(Overlay *ov)
     * otherwise), permanently on EVAS_LAYER_FILL (see overlay_fill_
     * sync.c's own definition) -- always render above the screenshot
     * (layer 0) with no per-call raising needed at all, regardless of
-    * creation/recreation order. See rubberband.edc's own header
-    * comment for why these are independent objects rather than Edje
+    * creation/recreation order. See this file's own header comment on
+    * ov->bg_obj for why these are independent objects rather than Edje
     * parts in the first place.
     *
     * The Done button is ALSO an independent Evas object on its own
@@ -613,14 +628,20 @@ overlay_show(Overlay *ov)
     * original Done-position-at-startup bug). Fixed by using ov->win_w/
     * win_h directly (the authoritative, already-known values) for
     * fill's default-geometry reset and Done's reposition below,
-    * instead of re-deriving both from bg's own geometry. bg is still
-    * read for ccx/ccy (fill/Done are always positioned relative to the
-    * window's own origin, which bg correctly represents regardless of
-    * this particular staleness -- only its WIDTH/HEIGHT were ever the
-    * unreliable part). */
-   Evas_Object *bg_obj = (Evas_Object *)edje_object_part_object_get(ov->edje_obj, "bg");
+    * instead of re-deriving both from bg's own geometry.
+    *
+    * NOW STRUCTURALLY MOOT, not just individually worked around: bg
+    * is a plain Evas rectangle (ov->bg_obj) since bg's own Edje group
+    * was removed entirely (see this file's own header comment on
+    * ov->bg_obj) -- there is no Edje part lookup left in this code
+    * path at all for Edje's own internal recalculation timing to ever
+    * be stale against. ccx/ccy are still read directly from ov->bg_obj
+    * below (fill/Done are always positioned relative to the window's
+    * own origin), but that read is now a plain, ordinary Evas geometry
+    * query with none of the "hasn't the layout engine caught up yet"
+    * risk this whole comment originally documented. */
    int ccx, ccy, ccw_unused, cch_unused;
-   evas_object_geometry_get(bg_obj, &ccx, &ccy, &ccw_unused, &cch_unused);
+   evas_object_geometry_get(ov->bg_obj, &ccx, &ccy, &ccw_unused, &cch_unused);
    (void)ccw_unused; (void)cch_unused;
    overlay_fill_set_geometry(ov->win_w / 4, ov->win_h / 4, ov->win_w / 2, ov->win_h / 2);
    overlay_done_button_reposition(ov->win_w, ov->win_h);
@@ -809,17 +830,18 @@ overlay_free(Overlay *ov)
 {
    if (!ov) return;
    /* fill, the 4 corner handles, and Done's own button/text objects
-    * are all independent Evas objects (see rubberband.edc's own
-    * header comment) -- NOT Edje parts, so deleting ov->win below
-    * (which cleans up edje_obj + shot_image via Elementary's own
-    * resize-object teardown) does not clean these up automatically.
-    * Explicit deletion required, before ov->win itself is deleted
-    * (though order doesn't strictly matter here since these objects
-    * don't depend on ov->win's own lifetime to be valid to delete --
-    * done first anyway, as the more defensive ordering). */
+    * are all independent Evas objects (see this file's own header
+    * comment on ov->bg_obj) -- NOT registered as resize objects on
+    * ov->win, so deleting ov->win below (which cleans up bg_obj +
+    * shot_image via Elementary's own resize-object teardown, since
+    * both of those ARE registered that way) does not clean these up
+    * automatically. Explicit deletion required, before ov->win itself
+    * is deleted (though order doesn't strictly matter here since these
+    * objects don't depend on ov->win's own lifetime to be valid to
+    * delete -- done first anyway, as the more defensive ordering). */
    overlay_fill_sync_free();
    overlay_done_button_free();
-   if (ov->win) evas_object_del(ov->win); /* deletes edje_obj + shot_image too */
+   if (ov->win) evas_object_del(ov->win); /* deletes bg_obj + shot_image too */
    free(ov);
 }
 
@@ -842,10 +864,10 @@ overlay_get_win(Overlay *ov)
 Eina_Bool
 overlay_get_record_geometry(Overlay *ov, int *out_x, int *out_y, int *out_w, int *out_h)
 {
-   if (!ov || !ov->edje_obj) return EINA_FALSE;
+   if (!ov || !ov->bg_obj) return EINA_FALSE;
 
-   /* Under the new "fill owns its own real geometry" model (see
-    * rubberband.edc's own header comment for the full architectural
+   /* Under the new "fill owns its own real geometry" model (see this
+    * file's own header comment on ov->bg_obj for the full architectural
     * rewrite this session), this function collapses to a simple unit
     * conversion -- fill's window-space geometry, read via
     * overlay_fill_get_geometry(), is ALREADY guaranteed correct

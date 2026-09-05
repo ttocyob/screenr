@@ -11,7 +11,7 @@
  * canvas level, entirely independent of smart-object parentage, which
  * is why layers are used here instead of evas_object_stack_above()/
  * below(): those two functions require both objects to share the same
- * "smart parent" status, and ov->edje_obj/ov->shot_image both have an
+ * "smart parent" status, and ov->bg_obj/ov->shot_image both have an
  * implicit smart parent from Elementary's elm_win_resize_object_add()
  * (which wraps resize objects in an internal Evas.Box) that plain
  * evas_object_rectangle_add() objects (fill/handles) never get --
@@ -27,7 +27,8 @@
  * PAINT order, Done still failed to receive clicks whenever fill
  * visually overlapped it, confirmed via real testing. The actual fix
  * was moving Done out of Edje's object tree entirely into a plain Evas
- * object (see rubberband.edc's own header comment for the full two-
+ * object (see overlay.c's own header comment on ov->bg_obj for the
+ * full two-
  * part rationale) -- putting every interactive object in this window
  * under ONE single, consistent event-routing system is what makes
  * clicks resolve correctly; the layer difference here is what then
@@ -79,17 +80,18 @@
  */
 typedef struct _Overlay Overlay;
 
-/* Creates the window and loads the rubberband Edje group into it, but
- * does NOT show it and does NOT take a screenshot yet -- call
- * overlay_show() to do both of those together, at the point Selection
- * mode's Record flow actually needs this window to appear.
- * theme_file is the compiled .edj containing "screenr/rubberband".
+/* Creates the window, but does NOT show it and does NOT take a
+ * screenshot yet -- call overlay_show() to do both of those together,
+ * at the point Selection mode's Record flow actually needs this window
+ * to appear. No longer loads any Edje group at all -- "bg" is a plain
+ * Evas rectangle now, see overlay.c's own header comment on ov->bg_obj
+ * for why the old "screenr/rubberband" group was removed entirely.
  * desktop_w/desktop_h size the window to the full real desktop
  * resolution (1:1 display, per current design decision -- see project
  * notes' OPEN QUESTIONS, now resolved). Returns NULL on failure --
  * non-fatal for the app as a whole, Selection mode just won't be
  * functional. */
-Overlay *overlay_new(const char *theme_file, int desktop_w, int desktop_h);
+Overlay *overlay_new(int desktop_w, int desktop_h);
 
 /* Takes a fresh screenshot, swallows it into the window, and shows the
  * window. This is the real entry point into "Selection mode's
@@ -142,14 +144,14 @@ void overlay_rescale(Overlay *ov, double scale);
 Evas_Object *overlay_get_win(Overlay *ov);
 
 /* Done button -- overlay_done_button.c. NOT an Edje part (see
- * rubberband.edc's own header comment for the full two-part
+ * overlay.c's own header comment on ov->bg_obj for the full two-part
  * architectural rationale: putting Done under the same plain-Evas
  * event-routing system as fill/handles is what actually fixes the
  * "Done unclickable when fill overlaps it" bug -- layer-based paint
  * ordering alone could not, confirmed via real testing).
  *
  * overlay_done_button_new() creates the button's two Evas objects
- * (rectangle + text) but does NOT position them -- called once from
+ * (image + text) but does NOT position them -- called once from
  * overlay_new(), which has no real window geometry to position
  * against yet (the Selection window hasn't been shown/mapped at that
  * point in startup). overlay_done_button_reposition() gives the
@@ -186,8 +188,8 @@ void overlay_done_button_set_ui_scale(double scale);
  *
  * fill and the 4 corner handles are plain, independent Evas objects
  * now (created by overlay_wire_fill_sync(), NOT Edje parts) -- see
- * rubberband.edc's own header comment for the full architectural
- * change and why. overlay_wire_body_drag()/overlay_wire_8handle_
+ * overlay.c's own header comment on ov->bg_obj for the full
+ * architectural change and why. overlay_wire_body_drag()/overlay_wire_8handle_
  * extras() below take these objects directly rather than resolving
  * them from an Edje object, since there is no longer an Edje object
  * to resolve them from. */

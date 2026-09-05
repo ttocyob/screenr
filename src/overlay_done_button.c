@@ -2,9 +2,11 @@
  * overlay_done_button.c
  *
  * Owns the Selection window's "Done" button -- now a plain,
- * independent Evas object (an image, images/rec_outline.png, plus a
- * text label), NOT an Edje part. See rubberband.edc's own header comment for the full
- * two-part architectural rationale; the short version: once fill/the
+ * independent Evas object (an image, images/done_outline.png, plus a
+ * text label), NOT an Edje part. See overlay.c's own header comment on
+ * ov->bg_obj for the full two-part architectural rationale
+ * (rubberband.edc, which used to hold this story, has been removed
+ * entirely); the short version: once fill/the
  * corner handles became plain Evas objects (living outside Edje's
  * object tree), they and done_outline (still an Edje part at the
  * time) belonged to two different event-routing subsystems -- plain
@@ -17,16 +19,15 @@
  * every interactive object in this window under ONE single, consistent
  * hit-testing system -- this file is that fix applied to Done.
  *
- * VISUAL: uses images/rec_outline.png directly (evas_object_image_add(),
+ * VISUAL: uses images/done_outline.png directly (evas_object_image_add(),
  * resolved via SCREENR_DATADIR -- see DONE_BTN_IMAGE_PATH's own
  * comment below) for the pill-shaped outline, replacing an earlier
- * flat-rectangle placeholder. No 9-patch border scaling is applied
- * (evas_object_image_border_set()) -- matches this exact same image's
- * only other usage in this codebase (main.edc's "timer_outline" part,
- * which also uses it as a plain stretched image with no image.border
- * declared), so this stays visually consistent with precedent already
- * established elsewhere rather than inventing new border values with
- * no way to verify them against the actual image content.
+ * flat-rectangle placeholder. Originally shared main.edc's own
+ * "timer_outline" asset (images/rec_outline.png) as a stand-in; now
+ * uses its own dedicated image instead, so no border-scaling precedent
+ * needs to be matched against that unrelated part anymore. No 9-patch
+ * border scaling is applied (evas_object_image_border_set()) here
+ * either way.
  *
  * POSITIONING HISTORY -- two distinct bugs, found in sequence:
  *
@@ -84,7 +85,7 @@
  * edje_cc and never need a standalone install location at all -- see
  * data/themes/default/meson.build's own install_data() rule, which
  * installs ONLY the handful of images loaded this way, images/
- * rec_outline.png and images/handle.png, to {datadir}/screenr/images/
+ * done_outline.png and images/handle.png, to {datadir}/screenr/images/
  * -- not the whole images/ directory, since everything else is already
  * embedded in the .edj and would be pure duplication to also install
  * as loose files). Adjacent string literals are concatenated by the C

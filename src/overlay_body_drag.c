@@ -12,7 +12,9 @@
  *
  * fill_obj (wired via overlay_wire_body_drag() below) is now a plain,
  * independent Evas rectangle created by overlay_fill_sync.c -- NOT an
- * Edje part -- see rubberband.edc's own header comment for why. This
+ * Edje part -- see overlay.c's own header comment on ov->bg_obj for
+ * the full history of why (rubberband.edc, which used to hold this
+ * story, has been removed entirely). This
  * file's own logic is otherwise unaffected by that change: it only
  * ever calls overlay_fill_get_geometry()/overlay_fill_set_geometry(),
  * never touches fill_obj's Evas geometry directly, so the object type

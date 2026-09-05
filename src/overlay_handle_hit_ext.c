@@ -2,10 +2,11 @@
  * overlay_handle_hit_ext.c
  *
  * Wires all 4 corner handles (handle_tl, handle_tr, handle_bl,
- * handle_br). These are now plain, independent Evas rectangles
- * created by overlay_fill_sync.c -- NOT Edje parts -- see
- * rubberband.edc's own header comment for the full architectural
- * change. overlay_wire_8handle_extras() below now takes the 4 objects
+ * handle_br). These are now plain, independent Evas objects created
+ * by overlay_fill_sync.c -- NOT Edje parts -- see overlay.c's own
+ * header comment on ov->bg_obj for the full architectural change
+ * (rubberband.edc, which used to hold this story, has been removed
+ * entirely). overlay_wire_8handle_extras() below now takes the 4 objects
  * directly rather than resolving them from an Edje object; this file's
  * own drag logic is otherwise unaffected -- it never touches the
  * handle objects' Evas geometry directly either way, only through

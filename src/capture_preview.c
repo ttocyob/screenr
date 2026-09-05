@@ -204,22 +204,27 @@ capture_preview_refresh(Capture_Preview *cp)
  * capture_preview_enter_selection_mode() and never hidden again except
  * by capture_preview_enter_screen_mode() -- exactly matching a real,
  * reported symptom: a small colored fragment (matching whatever the
- * CURRENT rubberband.edc's handle_tl/tr/bl/br parts are colored,
- * since this stray instance loads the same current compiled group)
+ * CURRENT (at the time) rubberband.edc's handle_tl/tr/bl/br parts were
+ * colored, since this stray instance loaded the same current compiled
+ * group -- rubberband.edc has SINCE been removed entirely, see
+ * overlay.c's own header comment on ov->bg_obj)
  * visible at the main window's own top-left corner, appearing the
  * instant Selection mode was entered -- before the real Selection
  * window (owned by overlay.c) was ever shown, and persisting even
  * during recording, since nothing ever hid it again once shown. Two
  * independent, separately-created "screenr/rubberband" instances were
  * coexisting in the same process, one correctly on the Selection
- * window's own canvas (overlay.c's ov->edje_obj) and one incorrectly
+ * window's own canvas (overlay.c's edje object, at the time -- that
+ * whole group has SINCE been removed entirely, see overlay.c's own
+ * header comment on ov->bg_obj) and one incorrectly
  * on the main window's canvas (this file's old cp->rubberband) -- both
  * loading the SAME compiled group, which is exactly why coloring a
- * handle part in rubberband.edc changed both instances at once. This
+ * handle part in rubberband.edc (also since removed) changed both
+ * instances at once. This
  * file's own rubberband mechanism additionally targeted "handle_a"/
- * "handle_b" Edje dragable parts that no longer exist at all in the
- * current rubberband.edc (rewritten to plain-RECT handle_tl/tr/bl/br
- * with no dragable{} block -- see that file's own header comment) --
+ * "handle_b" Edje dragable parts that no longer existed at all in
+ * rubberband.edc even at the time (rewritten to plain-RECT handle_tl/
+ * tr/bl/br with no dragable{} block) --
  * so even setting aside the leak, this code had already been silently
  * failing on every call for some time. */
 /* --------------------------------------------------------------------- */

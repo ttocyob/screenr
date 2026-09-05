@@ -499,7 +499,7 @@ callbacks_connect(App *app)
     *
     * KNOWN GAP, confirmed but not yet fixed: main.edc has no emitter
     * for "btn,refresh,clicked" at all -- no part or program anywhere
-    * in main.edc (or rubberband.edc) produces that signal. The C side
+    * produces that signal. The C side
     * below is fully wired and _on_refresh_clicked() works correctly if
     * ever triggered, but nothing in the current UI can trigger it; the
     * Refresh button this was built for isn't present in main.edc's

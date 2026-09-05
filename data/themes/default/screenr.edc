@@ -104,7 +104,6 @@ images {
 
 collections {
    #include "main.edc" // app layout
-   #include "rubberband.edc" // selection window
 }
 
 /*    "I pledge allegiance to the Parts, and to the Offsets for which they
