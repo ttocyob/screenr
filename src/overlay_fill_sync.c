@@ -336,36 +336,18 @@ overlay_wire_fill_sync(Evas *evas, Evas_Object *bg_obj, double scale)
    g_bg_obj = bg_obj;
    g_scale = scale;
 
-   /* Fill: a plain, independent Evas rectangle -- same visual color as
-    * the old Edje "fill" part (translucent yellow), but color values
-    * here MUST be premultiplied by alpha -- evas_object_color_set()
-    * enforces this directly (R,G,B <= A), unlike Edje's own .edc
-    * color: directive, which accepts straight (non-premultiplied)
-    * values and converts them internally. The old .edc's "255 204 10
-    * 48" was straight alpha; premultiplied by 48/255 that's
-    * (48, 38, 2, 48) -- confirmed via real testing that passing the
-    * straight values directly produced an Evas ERR and a rejected
-    * color set. mouse_events enabled via evas_object_pass_events_set(
-    * obj, EINA_FALSE) is the DEFAULT for a freshly-created Evas object
-    * (unlike Edje parts, which need an explicit mouse_events:1), so no
-    * extra call is needed here for overlay_body_drag.c's mouse
-    * handlers to receive events -- confirmed via EFL's own Evas_Object
-    * default behavior and real testing (drag worked immediately). */
    g_fill_obj = evas_object_rectangle_add(evas);
-   evas_object_color_set(g_fill_obj, 48, 38, 2, 48);
+
+#define PREMUL(c, a) (((c) * (a)) / 255)
+
+   int r = 100, g = 140, b = 200;
+   int a = 32;
+
+   evas_object_color_set(g_fill_obj, PREMUL(r, a), PREMUL(g, a), PREMUL(b, a), a);
    evas_object_layer_set(g_fill_obj, EVAS_LAYER_FILL);
    evas_object_show(g_fill_obj);
 
-   /* The 4 corner handles: images/handle.png (a real image with a
-    * baked-in dropshadow -- 0,1 offset, 2px blur, black at 80% opacity
-    * -- and the app's own blue accent color, 100 140 200, drawn once
-    * at 200% native resolution and downscaled to HANDLE_PX x HANDLE_PX
-    * on screen -- see HANDLE_IMAGE_PATH's own comment above on the
-    * hardcoded path). No color tint applied here -- unlike fill/Done,
-    * this image's own baked-in color and shadow ARE the final visual;
-    * runtime tinting would double up on or clash with the artwork's
-    * own baked-in color. Positioned by _reposition_handles() below
-    * relative to fill's own corners. */
+   /* The 4 corner handles: images/handle.png  */
    g_handle_tl = evas_object_image_add(evas);
    g_handle_tr = evas_object_image_add(evas);
    g_handle_bl = evas_object_image_add(evas);

@@ -72,7 +72,7 @@
  * directly in C pixel arithmetic against bg's own geometry, since
  * there is no more Edje spacer part to derive this from. */
 #define DONE_BTN_W 40
-#define DONE_BTN_H 17
+#define DONE_BTN_H 19
 #define DONE_BTN_RIGHT_MARGIN 13
 #define DONE_BTN_TOP_MARGIN 12
 
@@ -149,17 +149,12 @@ overlay_done_button_new(Evas *evas)
              DONE_BTN_IMAGE_PATH, evas_load_error_str(err));
    evas_object_image_filled_set(g_done_btn, EINA_TRUE);
 
-   /* Tinted with the app's own "gookie grien" accent (52 199 89,
-    * slightly translucent at 224/255) -- the same accent color already
-    * used elsewhere in this codebase for audio_icon/mouse_icon in
-    * main.edc, giving Done a consistent, recognizable "this is the
-    * active/confirm action" color rather than the neutral dark tint
-    * this button used previously. Checked against Evas's premultiplied-
-    * alpha requirement (R,G,B <= A) per this session's own established
-    * lesson (see fill's own color bug, overlay_fill_sync.c) -- 52, 199,
-    * and 89 are all <= 224, so these values are valid as-is; no
-    * conversion needed. */
-   evas_object_color_set(g_done_btn, 52, 199, 89, 224);
+#define PREMUL(c, a) (((c) * (a)) / 255)
+
+   int r = 255, g = 59, b = 48;
+   int a = 224;
+
+   evas_object_color_set(g_done_btn, PREMUL(r, a), PREMUL(g, a), PREMUL(b, a), a);
    evas_object_layer_set(g_done_btn, EVAS_LAYER_FILL + 1);
    evas_object_show(g_done_btn);
 
@@ -174,7 +169,7 @@ overlay_done_button_new(Evas *evas)
    g_done_text = evas_object_text_add(evas);
    evas_object_color_set(g_done_text, 255, 255, 255, 255);
    evas_object_text_style_set(g_done_text, EVAS_TEXT_STYLE_PLAIN);
-   evas_object_text_font_set(g_done_text, "Sans:style=Bold", 10);
+   evas_object_text_font_set(g_done_text, "Sans:style=Bold", 11);
    evas_object_text_text_set(g_done_text, "Done");
    evas_object_layer_set(g_done_text, EVAS_LAYER_FILL + 1);
    evas_object_pass_events_set(g_done_text, EINA_TRUE); /* clicks go to g_done_btn underneath, not swallowed here */
