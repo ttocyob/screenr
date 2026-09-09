@@ -1,5 +1,5 @@
 project('screenr', 'c', 
-        version : '0.2.2')
+        version : '0.1.2')
 
 efl_version = '>= 1.27.0'
 
