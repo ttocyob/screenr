@@ -72,7 +72,7 @@ group {
          }
       }
 
-// spacer for (screen, selection, window) row
+// spacer for (screen, selection, dialog) row
       part { 
          name: "spc_modes";
          type: SPACER; 
@@ -84,8 +84,8 @@ group {
             rel1 { to_y: "spc_resolution"; relative: 0.0 1.0; offset: 0 0; }
             rel2 { to: "bg"; relative: 1.0 1.0; offset: -1 -1; } 
             align: 0.5 0.0;
-            min: 52 26;
-            max: 52 26;
+            min: 95 26;
+            max: 95 26;
             fixed: 1 1;
             //color: 203 203 203 255; // for debug 
             offscale; 
@@ -207,13 +207,13 @@ group {
 
          description { 
             state: "default" 0.0;
-            rel1 { to: "spc_modes"; relative: 0.0 0.0; offset: 0 0; }
-            rel2 { to: "spc_modes"; relative: 1.0 1.0; offset: -1 -1; }
+            rel1 { to: "spc_modes"; relative: 0.0 0.0; offset: 12 0; }
+            rel2 { to: "spc_modes"; relative: 1.0 1.0; offset: -13 -1; }
             //align: 0.0 0.5;
             image.normal: "images/modes.png";
             image.border: 16 16 16 16;
-            min: 52 26; // 84 26;
-            max: 52 26; // 84 26;
+            min: 84 26;
+            max: 84 26;
             fixed: 1 1;
             color: 24 24 24 255;
             offscale; 
@@ -244,6 +244,12 @@ group {
 
          description { 
             state: "selection_mode" 0.0; // selection mode
+            inherit: "default" 0.0;
+            align: 0.5 0.5;
+         }
+
+         description { // not yet implemented
+            state: "dialog_mode" 0.0; // dialog mode
             inherit: "default" 0.0;
             align: 1.0 0.5;
          }
@@ -278,8 +284,8 @@ group {
          description { 
             state: "default" 0.0;
             rel1 { to: "mode-widget"; relative: 0.0 0.0; offset: 0 0; }
-            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -5 -1; }
-            align: 1.0 0.5;
+            rel2 { to: "mode-widget"; relative: 1.0 1.0; offset: -1 -1; }
+            align: 0.5 0.5;
             image.normal: "images/square-dashed.png";
             min: 20 20;
             max: 20 20;
@@ -289,9 +295,8 @@ group {
          }
       }
 
-/*
       part { 
-         name: "window_icon"; 
+         name: "window_icon"; // future elm_dialog
          type: IMAGE;
          scale: 1;
          mouse_events: 0;
@@ -309,7 +314,6 @@ group {
             offscale;
          }
       }
-*/
 
 // the timer 
       part { 

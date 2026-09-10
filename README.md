@@ -68,3 +68,8 @@ Click the selection-mode icon (or press `Tab`), then press record. A window open
 ## License
 
 BSD 2-Clause. See [LICENSE](LICENSE).
+
+Screenr bundles a small number of third-party assets (the Hack typeface and
+several Lucide icons) under their own permissive licenses. See
+[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md) for details and full license
+texts.

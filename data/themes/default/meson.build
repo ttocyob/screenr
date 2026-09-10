@@ -1,6 +1,7 @@
 procvue_edj = custom_target('screenr.edj',
   input        : 'screenr.edc',
   output       : 'screenr.edj',
+  depend_files : ['main.edc'],
   command      : [
     edje_cc,
     '-id', meson.current_source_dir(),

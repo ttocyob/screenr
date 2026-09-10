@@ -19,6 +19,7 @@ images {
 
    image: "images/monitor.png" COMP; // fullscreen icon
    image: "images/square-dashed.png" COMP; // selection icon
+   image: "images/app-window.png" COMP; // window icon
 
    image: "images/modes.png" COMP;
 
